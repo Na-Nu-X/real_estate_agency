@@ -1,0 +1,243 @@
+<header class="page-head">
+  <div class="container">
+    <nav class="breadcrumb" aria-label="Omrvinková navigácia">
+      <a routerLink="/">Domov</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">Ponuka</span>
+    </nav>
+    <span class="eyebrow eyebrow--ruled">Katalóg nehnuteľností</span>
+    <h1>{{ heading() }}</h1>
+  </div>
+</header>
+
+<div class="catalog container">
+  <!-- ============================================================ FILTERS -->
+  <div class="filters-backdrop" [class.is-open]="filtersOpen()" (click)="filtersOpen.set(false)" aria-hidden="true"></div>
+  <aside class="filters" [class.is-open]="filtersOpen()" aria-label="Filtre">
+    <div class="filters__head">
+      <h2 class="h4">Filtrovať ponuku</h2>
+      <button type="button" class="filters__close" (click)="filtersOpen.set(false)" aria-label="Zavrieť filtre">
+        <app-icon name="close" [size]="22" />
+      </button>
+    </div>
+
+    <div class="filters__body">
+      <fieldset class="filters__group">
+        <legend>Transakcia</legend>
+        <div class="segmented">
+          <button type="button" class="chip" [attr.aria-pressed]="!filters().transaction" (click)="updateParams({ transaction: null })">
+            Všetko
+          </button>
+          @for (o of transactionOptions; track o.value) {
+            <button
+              type="button"
+              class="chip"
+              [attr.aria-pressed]="filters().transaction === o.value"
+              (click)="updateParams({ transaction: o.value })"
+            >
+              {{ o.label }}
+            </button>
+          }
+        </div>
+      </fieldset>
+
+      <fieldset class="filters__group">
+        <legend>Typ nehnuteľnosti</legend>
+        <div class="chips">
+          @for (o of typeOptions; track o.value) {
+            <button
+              type="button"
+              class="chip"
+              [attr.aria-pressed]="filters().property_type === o.value"
+              (click)="toggleParam('property_type', o.value)"
+            >
+              {{ o.label }}
+            </button>
+          }
+        </div>
+      </fieldset>
+
+      <div class="filters__group field">
+        <label class="field__label" for="f-city">Lokalita</label>
+        <select id="f-city" class="control" [value]="filters().city ?? ''" (change)="setSelect('city', $event)">
+          <option value="">Celé Slovensko</option>
+          @for (c of cityOptions(); track c) {
+            <option [value]="c">{{ c }}</option>
+          }
+        </select>
+      </div>
+
+      <fieldset class="filters__group">
+        <legend>Cena (€)</legend>
+        <div class="range-pair">
+          <input
+            type="number"
+            class="control"
+            placeholder="Od"
+            min="0"
+            step="1000"
+            inputmode="numeric"
+            aria-label="Minimálna cena"
+            [value]="filters().min_price ?? ''"
+            (change)="setNumber('min_price', $event)"
+          />
+          <span aria-hidden="true">–</span>
+          <input
+            type="number"
+            class="control"
+            placeholder="Do"
+            min="0"
+            step="1000"
+            inputmode="numeric"
+            aria-label="Maximálna cena"
+            [value]="filters().max_price ?? ''"
+            (change)="setNumber('max_price', $event)"
+          />
+        </div>
+      </fieldset>
+
+      <fieldset class="filters__group">
+        <legend>Plocha (m²)</legend>
+        <div class="range-pair">
+          <input
+            type="number"
+            class="control"
+            placeholder="Od"
+            min="0"
+            inputmode="numeric"
+            aria-label="Minimálna plocha"
+            [value]="filters().min_area ?? ''"
+            (change)="setNumber('min_area', $event)"
+          />
+          <span aria-hidden="true">–</span>
+          <input
+            type="number"
+            class="control"
+            placeholder="Do"
+            min="0"
+            inputmode="numeric"
+            aria-label="Maximálna plocha"
+            [value]="filters().max_area ?? ''"
+            (change)="setNumber('max_area', $event)"
+          />
+        </div>
+      </fieldset>
+
+      <fieldset class="filters__group">
+        <legend>Počet izieb</legend>
+        <div class="segmented segmented--even">
+          @for (o of roomOptions; track o.value) {
+            <button
+              type="button"
+              class="chip"
+              [attr.aria-pressed]="filters().rooms === o.value"
+              (click)="toggleParam('rooms', o.value)"
+            >
+              {{ o.label }}
+            </button>
+          }
+        </div>
+      </fieldset>
+
+      <label class="checkbox filters__group">
+        <input type="checkbox" [checked]="!!filters().featured" (change)="toggleParam('featured', true)" />
+        <span>Iba exkluzívne ponuky</span>
+      </label>
+    </div>
+
+    <div class="filters__foot">
+      <button type="button" class="btn btn--ghost" (click)="resetFilters()">Zrušiť filtre</button>
+      <button type="button" class="btn btn--primary filters__apply" (click)="filtersOpen.set(false)">
+        Zobraziť {{ count() ?? '' }}
+      </button>
+    </div>
+  </aside>
+
+  <!-- ============================================================ RESULTS -->
+  <section class="results" aria-live="polite">
+    <div class="toolbar">
+      <p class="toolbar__count">{{ countLabel() }}</p>
+
+      <div class="toolbar__controls">
+        <button type="button" class="btn btn--outline btn--sm toolbar__filters-btn" (click)="filtersOpen.set(true)">
+          <app-icon name="filter" [size]="16" />
+          Filtre
+          @if (activeChips().length) {
+            <span class="toolbar__badge">{{ activeChips().length }}</span>
+          }
+        </button>
+
+        <label class="toolbar__sort">
+          <span class="visually-hidden">Zoradiť</span>
+          <select class="control" [value]="filters().ordering ?? '-created_at'" (change)="setSelect('ordering', $event)">
+            @for (o of orderingOptions; track o.value) {
+              <option [value]="o.value">{{ o.label }}</option>
+            }
+          </select>
+        </label>
+
+        <div class="toolbar__view" role="group" aria-label="Zobrazenie">
+          <button type="button" [attr.aria-pressed]="view() === 'grid'" (click)="setView('grid')" aria-label="Mriežka">
+            <app-icon name="grid" [size]="18" />
+          </button>
+          <button type="button" [attr.aria-pressed]="view() === 'list'" (click)="setView('list')" aria-label="Zoznam">
+            <app-icon name="list" [size]="18" />
+          </button>
+        </div>
+      </div>
+    </div>
+
+    @if (activeChips().length) {
+      <div class="active-chips">
+        @for (chip of activeChips(); track chip.label) {
+          <button type="button" class="active-chip" (click)="updateParams(chip.clear)" [attr.aria-label]="'Odstrániť filter ' + chip.label">
+            {{ chip.label }}
+            <app-icon name="close" [size]="14" />
+          </button>
+        }
+        <button type="button" class="active-chips__reset" (click)="resetFilters()">Zrušiť všetko</button>
+      </div>
+    }
+
+    @let state = results();
+    @if (state.status === 'loading') {
+      <div class="results__grid" [class.is-list]="view() === 'list'">
+        @for (s of skeletons; track s) {
+          <div class="card-skeleton">
+            <div class="skeleton card-skeleton__media"></div>
+            <div class="skeleton card-skeleton__line"></div>
+            <div class="skeleton card-skeleton__line card-skeleton__line--short"></div>
+          </div>
+        }
+      </div>
+    } @else if (state.status === 'error') {
+      <div class="empty">
+        <app-icon name="info" [size]="32" />
+        <h2 class="h3">Ponuku sa nepodarilo načítať</h2>
+        <p>Skontrolujte pripojenie k internetu a skúste to znova.</p>
+        <button type="button" class="btn btn--outline" (click)="retry()">Skúsiť znova</button>
+      </div>
+    } @else if (state.status === 'success') {
+      @if (state.data.length) {
+        <div class="results__grid" [class.is-list]="view() === 'list'">
+          @for (p of state.data; track p.id; let i = $index) {
+            <app-property-card [property]="p" [layout]="view()" [eager]="i < 3" />
+          }
+        </div>
+      } @else {
+        <div class="empty">
+          <app-icon name="search" [size]="32" />
+          <h2 class="h3">Zadaným kritériám nezodpovedá žiadna nehnuteľnosť</h2>
+          <p>
+            Skúste upraviť filtre alebo nám dajte vedieť, čo hľadáte. Mnohé nehnuteľnosti predávame diskrétne, bez verejnej
+            inzercie.
+          </p>
+          <div class="empty__actions">
+            <button type="button" class="btn btn--primary" (click)="resetFilters()">Zrušiť filtre</button>
+            <a routerLink="/kontakt" class="btn btn--outline">Napíšte nám</a>
+          </div>
+        </div>
+      }
+    }
+  </section>
+</div>

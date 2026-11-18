@@ -1,0 +1,189 @@
+@let s = state();
+@if (s.status === 'loading') {
+  <div class="container detail-skeleton" aria-busy="true" aria-label="Načítavam nehnuteľnosť">
+    <div class="skeleton detail-skeleton__line detail-skeleton__line--sm"></div>
+    <div class="skeleton detail-skeleton__line detail-skeleton__line--lg"></div>
+    <div class="skeleton detail-skeleton__media"></div>
+  </div>
+} @else if (s.status === 'error') {
+  <section class="container not-found">
+    <span class="eyebrow eyebrow--ruled">{{ s.notFound ? 'Chyba 404' : 'Chyba' }}</span>
+    <h1>{{ s.notFound ? 'Nehnuteľnosť už nie je v ponuke' : 'Nehnuteľnosť sa nepodarilo načítať' }}</h1>
+    <p class="lead">
+      {{ s.notFound
+        ? 'Inzerát mohol byť stiahnutý alebo nehnuteľnosť už našla nového majiteľa. Pozrite si našu aktuálnu ponuku.'
+        : 'Skontrolujte pripojenie k internetu a skúste stránku obnoviť.' }}
+    </p>
+    <a routerLink="/ponuka" class="btn btn--primary">Aktuálna ponuka</a>
+  </section>
+} @else if (s.status === 'success') {
+  @let p = s.data;
+
+  <!-- ============================================================ HEADER -->
+  <header class="head container">
+    <nav class="breadcrumb" aria-label="Omrvinková navigácia">
+      <a routerLink="/">Domov</a>
+      <span aria-hidden="true">/</span>
+      <a routerLink="/ponuka">Ponuka</a>
+      <span aria-hidden="true">/</span>
+      <a routerLink="/ponuka" [queryParams]="{ city: p.city }">{{ p.city }}</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{{ p.title }}</span>
+    </nav>
+
+    <div class="head__row">
+      <div class="head__title">
+        <div class="head__tags">
+          @if (p.badge !== 'none') {
+            <span class="badge badge--{{ p.badge }}">{{ p.badge_display }}</span>
+          }
+          <span class="head__transaction">{{ p.property_type_display }} · {{ p.transaction_display }}</span>
+        </div>
+        <h1>{{ p.title }}</h1>
+        <p class="head__location">
+          <app-icon name="map-pin" [size]="18" />
+          {{ p.city }}@if (p.district) {, {{ p.district }}}
+        </p>
+      </div>
+
+      <div class="head__price">
+        <span class="head__price-label">{{ p.transaction === 'prenajom' ? 'Mesačný nájom' : 'Cena' }}</span>
+        <strong class="num">{{ p.price | eur: p.transaction }}</strong>
+        @if (pricePerSqm(); as ppsqm) {
+          <span class="head__ppsqm num">{{ ppsqm | eur }} / m²</span>
+        }
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================================================ GALLERY -->
+  <div class="container">
+    <app-property-gallery [images]="gallery()" [title]="p.title" />
+  </div>
+
+  <!-- ============================================================ BODY -->
+  <div class="layout container">
+    <div class="main">
+      @if (keyFacts().length) {
+        <dl class="facts">
+          @for (f of keyFacts(); track f.label) {
+            <div class="facts__item">
+              <app-icon [name]="f.icon" [size]="22" [strokeWidth]="1.25" />
+              <dt>{{ f.label }}</dt>
+              <dd>{{ f.value }}</dd>
+            </div>
+          }
+        </dl>
+      }
+
+      <section class="block">
+        <h2 class="block__title">O nehnuteľnosti</h2>
+        <div class="description">
+          @for (para of paragraphs(); track $index) {
+            <p>{{ para }}</p>
+          }
+        </div>
+      </section>
+
+      <section class="block">
+        <h2 class="block__title">Technické parametre</h2>
+        <table class="specs">
+          <tbody>
+            @for (row of specs(); track row[0]) {
+              <tr>
+                <th scope="row">{{ row[0] }}</th>
+                <td>{{ row[1] }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </section>
+
+      @if (p.amenities.length) {
+        <section class="block">
+          <h2 class="block__title">Vybavenie a výhody</h2>
+          <ul class="amenities" role="list">
+            @for (a of p.amenities; track a) {
+              <li><app-icon name="check" [size]="18" />{{ a }}</li>
+            }
+          </ul>
+        </section>
+      }
+
+      @if (p.transaction === 'predaj' && isAvailable()) {
+        <section class="block" id="hypoteka">
+          <h2 class="block__title">Hypotekárna kalkulačka</h2>
+          <p class="block__intro">Orientačný výpočet mesačnej splátky pre túto nehnuteľnosť. Hodnoty si môžete upraviť.</p>
+          <app-mortgage-calculator [initialPrice]="p.price" />
+        </section>
+      }
+    </div>
+
+    <!-- ============================================================ SIDEBAR -->
+    <aside class="sidebar" id="obhliadka">
+      <div class="sidebar__inner">
+        @if (p.agent; as agent) {
+          <div class="agent">
+            <img [src]="agent.photo_url" [alt]="agent.full_name" width="72" height="72" loading="lazy" />
+            <div>
+              <span class="agent__label">Váš maklér</span>
+              <strong class="agent__name">{{ agent.full_name }}</strong>
+              <span class="agent__role">{{ agent.role }}</span>
+            </div>
+          </div>
+          <div class="agent__links">
+            <a [href]="agentPhoneHref()" class="btn btn--outline btn--sm"><app-icon name="phone" [size]="15" />{{ agent.phone }}</a>
+            <a [href]="mailHref()" class="btn btn--outline btn--sm" aria-label="Napísať e-mail maklérovi"><app-icon name="mail" [size]="15" /></a>
+          </div>
+        }
+
+        <div class="sidebar__form">
+          @if (isAvailable()) {
+            <h2 class="h3">Rezervovať obhliadku</h2>
+            <p class="sidebar__hint">Vyplňte formulár a maklér vás bude kontaktovať do 24 hodín.</p>
+            <app-viewing-form [propertySlug]="p.slug" [propertyTitle]="p.title" />
+          } @else {
+            <h2 class="h3">Táto nehnuteľnosť je predaná</h2>
+            <p class="sidebar__hint">
+              Hľadáte podobnú? Ozvite sa nám – mnohé nehnuteľnosti ponúkame diskrétne, ešte pred zverejnením.
+            </p>
+            <a routerLink="/kontakt" class="btn btn--primary btn--block">Kontaktovať kanceláriu</a>
+          }
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- ============================================================ SIMILAR -->
+  @if (similar().length) {
+    <section class="section similar">
+      <div class="container">
+        <header class="section-head">
+          <div class="section-head__text">
+            <span class="eyebrow eyebrow--ruled">Mohlo by vás zaujímať</span>
+            <h2>Podobné nehnuteľnosti</h2>
+          </div>
+          <a routerLink="/ponuka" [queryParams]="{ property_type: p.property_type, transaction: p.transaction }" class="link-arrow">
+            Zobraziť všetky <app-icon name="arrow-right" [size]="16" />
+          </a>
+        </header>
+        <div class="grid-3">
+          @for (item of similar(); track item.id) {
+            <app-property-card [property]="item" />
+          }
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- Mobile sticky CTA -->
+  @if (isAvailable()) {
+    <div class="mobile-cta">
+      <div>
+        <strong class="num">{{ p.price | eur: p.transaction }}</strong>
+        <span>{{ p.floor_area > 0 ? (p.floor_area | area) : (p.land_area | area) }}</span>
+      </div>
+      <button type="button" class="btn btn--primary btn--sm" (click)="scrollToForm()">Obhliadka</button>
+    </div>
+  }
+}

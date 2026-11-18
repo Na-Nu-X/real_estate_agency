@@ -1,0 +1,82 @@
+@if (state() === 'success') {
+  <div class="success-state" role="status">
+    <div class="success-state__icon"><app-icon name="check" [size]="28" [strokeWidth]="2" /></div>
+    <h3>Ďakujeme, žiadosť sme prijali</h3>
+    <p>Maklér vás bude kontaktovať najneskôr do 24 hodín a potvrdí termín obhliadky.</p>
+    <button type="button" class="link" (click)="reset()">Odoslať ďalšiu žiadosť</button>
+  </div>
+} @else {
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="viewing-form">
+    <div class="field">
+      <label class="field__label" for="vf-name">Meno a priezvisko</label>
+      <input id="vf-name" class="control" formControlName="client_name" autocomplete="name" />
+      @if (controlError(form.controls.client_name); as e) {
+        <span class="field__error">{{ e }}</span>
+      }
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="vf-email">E-mail</label>
+      <input id="vf-email" type="email" class="control" formControlName="email" autocomplete="email" />
+      @if (controlError(form.controls.email); as e) {
+        <span class="field__error">{{ e }}</span>
+      }
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="vf-phone">Telefón</label>
+      <input
+        id="vf-phone"
+        type="tel"
+        class="control"
+        formControlName="phone"
+        autocomplete="tel"
+        placeholder="+421 900 123 456"
+      />
+      @if (controlError(form.controls.phone); as e) {
+        <span class="field__error">{{ e }}</span>
+      }
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="vf-date">
+        Preferovaný termín <span class="field__optional">(nepovinné)</span>
+      </label>
+      <input id="vf-date" type="datetime-local" class="control" formControlName="preferred_datetime" [min]="minDate" />
+      @if (controlError(form.controls.preferred_datetime); as e) {
+        <span class="field__error">{{ e }}</span>
+      }
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="vf-message">Správa <span class="field__optional">(nepovinné)</span></label>
+      <textarea
+        id="vf-message"
+        class="control"
+        rows="3"
+        formControlName="message"
+        [placeholder]="'Mám záujem o obhliadku: ' + propertyTitle()"
+      ></textarea>
+    </div>
+
+    <label class="checkbox">
+      <input type="checkbox" formControlName="consent" />
+      <span>
+        Súhlasím so
+        <a routerLink="/ochrana-osobnych-udajov" target="_blank">spracovaním osobných údajov</a>
+        na účel vybavenia mojej žiadosti.
+      </span>
+    </label>
+    @if (controlError(form.controls.consent); as e) {
+      <span class="field__error">{{ e }}</span>
+    }
+
+    @if (formError(); as message) {
+      <div class="form-alert" role="alert">{{ message }}</div>
+    }
+
+    <button type="submit" class="btn btn--primary btn--block btn--lg" [class.is-loading]="state() === 'submitting'" [disabled]="state() === 'submitting'">
+      Rezervovať obhliadku
+    </button>
+  </form>
+}

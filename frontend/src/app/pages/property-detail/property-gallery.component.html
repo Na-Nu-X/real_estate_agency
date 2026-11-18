@@ -1,0 +1,108 @@
+@if (current(); as img) {
+  <div class="gallery">
+    <div class="stage" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)">
+      <button type="button" class="stage__image" (click)="open()" [attr.aria-label]="'Otvoriť fotografiu na celú obrazovku: ' + (img.caption || title())">
+        @for (image of images(); track image.id; let i = $index) {
+          <img
+            [src]="image.image_url"
+            [alt]="image.caption || title()"
+            [class.is-active]="i === index()"
+            [attr.loading]="i === 0 ? 'eager' : 'lazy'"
+            [attr.fetchpriority]="i === 0 ? 'high' : null"
+            width="1600"
+            height="1067"
+            decoding="async"
+          />
+        }
+      </button>
+
+      @if (count() > 1) {
+        <button type="button" class="stage__nav stage__nav--prev" (click)="prev()" aria-label="Predchádzajúca fotografia">
+          <app-icon name="chevron-left" [size]="22" />
+        </button>
+        <button type="button" class="stage__nav stage__nav--next" (click)="next()" aria-label="Nasledujúca fotografia">
+          <app-icon name="chevron-right" [size]="22" />
+        </button>
+      }
+
+      <div class="stage__meta">
+        <span class="stage__counter num">{{ index() + 1 }} / {{ count() }}</span>
+        <button type="button" class="stage__expand" (click)="open()">
+          <app-icon name="expand" [size]="16" />
+          Celá obrazovka
+        </button>
+      </div>
+    </div>
+
+    @if (count() > 1) {
+      <div class="thumbs" #thumbs role="tablist" aria-label="Náhľady fotografií">
+        @for (image of images(); track image.id; let i = $index) {
+          <button
+            type="button"
+            role="tab"
+            class="thumbs__item"
+            [class.is-active]="i === index()"
+            [attr.aria-selected]="i === index()"
+            [attr.aria-label]="'Fotografia ' + (i + 1) + (image.caption ? ': ' + image.caption : '')"
+            (click)="select(i)"
+          >
+            <img [src]="image.image_url" alt="" loading="lazy" width="200" height="140" />
+          </button>
+        }
+      </div>
+    }
+  </div>
+
+  @if (lightboxOpen()) {
+    <div
+      #lightbox
+      class="lightbox"
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-label]="'Fotogaléria: ' + title()"
+      tabindex="-1"
+      (touchstart)="onTouchStart($event)"
+      (touchend)="onTouchEnd($event)"
+    >
+      <div class="lightbox__top">
+        <span class="lightbox__counter num">{{ index() + 1 }} / {{ count() }}</span>
+        <span class="lightbox__title">{{ title() }}</span>
+        <button type="button" class="lightbox__close" (click)="close()" aria-label="Zavrieť galériu">
+          <app-icon name="close" [size]="26" />
+        </button>
+      </div>
+
+      <figure class="lightbox__figure" (click)="$event.target === $event.currentTarget && close()">
+        <!-- single-item loop keyed by id re-creates the <img>, replaying the fade-in -->
+        @for (shown of [img]; track shown.id) {
+          <img [src]="shown.image_url" [alt]="shown.caption || title()" class="lightbox__image" />
+        }
+        @if (img.caption) {
+          <figcaption>{{ img.caption }}</figcaption>
+        }
+      </figure>
+
+      @if (count() > 1) {
+        <button type="button" class="lightbox__nav lightbox__nav--prev" (click)="prev()" aria-label="Predchádzajúca fotografia">
+          <app-icon name="chevron-left" [size]="32" [strokeWidth]="1.25" />
+        </button>
+        <button type="button" class="lightbox__nav lightbox__nav--next" (click)="next()" aria-label="Nasledujúca fotografia">
+          <app-icon name="chevron-right" [size]="32" [strokeWidth]="1.25" />
+        </button>
+
+        <div class="lightbox__thumbs">
+          @for (image of images(); track image.id; let i = $index) {
+            <button
+              type="button"
+              [class.is-active]="i === index()"
+              (click)="select(i)"
+              [attr.aria-label]="'Fotografia ' + (i + 1)"
+            >
+              <img [src]="image.image_url" alt="" width="120" height="80" />
+            </button>
+          }
+        </div>
+      }
+    </div>
+  }
+}
