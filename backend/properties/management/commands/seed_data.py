@@ -322,12 +322,11 @@ PROPERTIES = [
             "päť spální s vlastnými kúpeľňami, wellness so saunou a lyžiareň.\n\n"
             "Výborná príležitosť aj pre luxusný rekreačný prenájom – lanovka je vzdialená 5 minút."
         ),
-        "cover": "1518780664697-55e3ad937233",
+        "cover": "1510798831971-661eb04b3739",
         "gallery": [
-            ("1518780664697-55e3ad937233", "Rezidencia"),
-            ("1542718610-a1d656d1884c", "Zima v Tatrách"),
-            ("1510798831971-661eb04b3739", "Exteriér"),
-            ("1616594039964-ae9021a400a0", "Obývacia hala"),
+            ("1510798831971-661eb04b3739", "Rezidencia v zime"),
+            ("1542718610-a1d656d1884c", "Exteriér pri západe slnka"),
+            ("1616594039964-ae9021a400a0", "Spálňa"),
         ],
         "days_ago": 6,
     },

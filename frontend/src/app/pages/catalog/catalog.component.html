@@ -59,10 +59,10 @@
 
       <div class="filters__group field">
         <label class="field__label" for="f-city">Lokalita</label>
-        <select id="f-city" class="control" [value]="filters().city ?? ''" (change)="setSelect('city', $event)">
-          <option value="">Celé Slovensko</option>
+        <select id="f-city" class="control" (change)="setSelect('city', $event)">
+          <option value="" [selected]="!filters().city">Celé Slovensko</option>
           @for (c of cityOptions(); track c) {
-            <option [value]="c">{{ c }}</option>
+            <option [value]="c" [selected]="filters().city === c">{{ c }}</option>
           }
         </select>
       </div>
@@ -148,7 +148,7 @@
     <div class="filters__foot">
       <button type="button" class="btn btn--ghost" (click)="resetFilters()">Zrušiť filtre</button>
       <button type="button" class="btn btn--primary filters__apply" (click)="filtersOpen.set(false)">
-        Zobraziť {{ count() ?? '' }}
+        Zobraziť výsledky{{ count() !== null ? ' (' + count() + ')' : '' }}
       </button>
     </div>
   </aside>
@@ -169,9 +169,9 @@
 
         <label class="toolbar__sort">
           <span class="visually-hidden">Zoradiť</span>
-          <select class="control" [value]="filters().ordering ?? '-created_at'" (change)="setSelect('ordering', $event)">
+          <select class="control" (change)="setSelect('ordering', $event)">
             @for (o of orderingOptions; track o.value) {
-              <option [value]="o.value">{{ o.label }}</option>
+              <option [value]="o.value" [selected]="(filters().ordering ?? '-created_at') === o.value">{{ o.label }}</option>
             }
           </select>
         </label>

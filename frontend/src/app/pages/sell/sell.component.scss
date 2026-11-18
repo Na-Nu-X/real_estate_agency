@@ -18,10 +18,6 @@
     height: 100%;
     z-index: -1;
 
-    @include up(lg) {
-      height: 78%;
-    }
-
     img {
       @include cover-image;
     }

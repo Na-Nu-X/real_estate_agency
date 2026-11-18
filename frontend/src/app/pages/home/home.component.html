@@ -53,28 +53,28 @@
       <div class="search__fields">
         <label class="search__field">
           <span>Typ nehnuteľnosti</span>
-          <select class="search__select" [value]="qsType()" (change)="setValue(qsType, $event)">
+          <select class="search__select" (change)="setValue(qsType, $event)">
             <option value="">Všetky typy</option>
             @for (o of typeOptions; track o.value) {
-              <option [value]="o.value">{{ o.label }}</option>
+              <option [value]="o.value" [selected]="qsType() === o.value">{{ o.label }}</option>
             }
           </select>
         </label>
         <label class="search__field">
           <span>Lokalita</span>
-          <select class="search__select" [value]="qsCity()" (change)="setValue(qsCity, $event)">
+          <select class="search__select" (change)="setValue(qsCity, $event)">
             <option value="">Celé Slovensko</option>
             @for (city of site.searchLocations; track city) {
-              <option [value]="city">{{ city }}</option>
+              <option [value]="city" [selected]="qsCity() === city">{{ city }}</option>
             }
           </select>
         </label>
         <label class="search__field">
           <span>Maximálna cena</span>
-          <select class="search__select" [value]="qsMaxPrice()" (change)="setValue(qsMaxPrice, $event, true)">
+          <select class="search__select" (change)="setValue(qsMaxPrice, $event, true)">
             <option value="">Bez obmedzenia</option>
             @for (o of pricePresets; track o.value) {
-              <option [value]="o.value">{{ o.label }}</option>
+              <option [value]="o.value" [selected]="qsMaxPrice() === o.value">{{ o.label }}</option>
             }
           </select>
         </label>

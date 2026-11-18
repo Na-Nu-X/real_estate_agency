@@ -34,6 +34,16 @@ import { IconComponent } from '../icon/icon.component';
     :host {
       display: block;
     }
+    .agent {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .agent__body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
     .agent__photo {
       aspect-ratio: 4 / 5;
       overflow: hidden;
@@ -61,7 +71,7 @@ import { IconComponent } from '../icon/icon.component';
       color: var(--color-text-muted);
     }
     .agent__listings {
-      margin: 0.5rem 0 0;
+      margin: 0.5rem 0 1rem;
       font-size: 0.75rem;
       font-weight: 600;
       letter-spacing: 0.1em;
@@ -69,6 +79,7 @@ import { IconComponent } from '../icon/icon.component';
       color: var(--color-brass);
     }
     .agent__contact {
+      margin-top: auto !important;
       display: flex;
       flex-wrap: wrap;
       gap: 0.5rem 1.25rem;

@@ -190,7 +190,7 @@
 // ---------------------------------------------------------------- Drawer
 .drawer-backdrop {
   position: fixed;
-  inset: 0;
+  inset: var(--header-h) 0 0;
   z-index: $z-drawer - 1;
   background: rgba(20, 23, 26, 0.35);
   opacity: 0;
