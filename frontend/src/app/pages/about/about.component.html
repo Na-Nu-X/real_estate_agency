@@ -1,0 +1,164 @@
+<!-- ================================================================ INTRO -->
+<section class="intro">
+  <div class="container intro__grid">
+    <div class="intro__copy">
+      <nav class="breadcrumb" aria-label="Omrvinková navigácia">
+        <a routerLink="/">Domov</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">O nás</span>
+      </nav>
+      <span class="eyebrow eyebrow--ruled">O kancelárii</span>
+      <h1>Butiková realitná kancelária s <em>osobným</em> prístupom</h1>
+      <p class="lead">
+        {{ site.name }} vznikla s jednoduchou myšlienkou: predaj či kúpa domova je jedno z najdôležitejších rozhodnutí
+        v živote a zaslúži si viac než len inzerát. Zastupujeme starostlivo vybrané nehnuteľnosti a každej z nich
+        venujeme pozornosť, akú by sme venovali vlastnému domovu.
+      </p>
+    </div>
+    <figure class="intro__media">
+      <img [src]="site.images.about" alt="Interiér prémiovej rezidencie" width="1200" height="1400" />
+    </figure>
+  </div>
+</section>
+
+<!-- ================================================================ METRICS -->
+<section class="band">
+  <div class="container">
+    <dl class="band__metrics">
+      @for (m of site.metrics; track m.label) {
+        <div>
+          <dd class="num">{{ m.value }}</dd>
+          <dt>{{ m.label }}</dt>
+        </div>
+      }
+    </dl>
+  </div>
+</section>
+
+<!-- ================================================================ VALUES -->
+<section class="section">
+  <div class="container values">
+    <div>
+      <span class="eyebrow eyebrow--ruled">Naše hodnoty</span>
+      <h2>Na čom nám záleží</h2>
+    </div>
+    <div class="values__list">
+      @for (v of values; track v.title; let i = $index) {
+        <article>
+          <span class="values__num">0{{ i + 1 }}</span>
+          <h3>{{ v.title }}</h3>
+          <p>{{ v.text }}</p>
+        </article>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ TEAM -->
+<section class="section team" id="tim">
+  <div class="container">
+    <header class="section-head">
+      <div class="section-head__text">
+        <span class="eyebrow eyebrow--ruled">Náš tím</span>
+        <h2>Ľudia, ktorým môžete dôverovať</h2>
+        <p class="lead">Každý z našich maklérov sa špecializuje na konkrétny región a segment trhu.</p>
+      </div>
+    </header>
+
+    @switch (status()) {
+      @case ('loading') {
+        <div class="team__list">
+          @for (s of [1, 2]; track s) {
+            <div class="skeleton profile-skeleton"></div>
+          }
+        </div>
+      }
+      @case ('error') {
+        <p class="state-message">Informácie o tíme sa nepodarilo načítať.</p>
+      }
+      @default {
+        <div class="team__list">
+          @for (member of team(); track member.agent.id; let odd = $odd) {
+            <article class="profile" [class.is-reversed]="odd">
+              <div class="profile__photo">
+                <img [src]="member.agent.photo_url" [alt]="member.agent.full_name" width="600" height="750" loading="lazy" />
+              </div>
+              <div class="profile__body">
+                <span class="eyebrow">{{ member.agent.role }}</span>
+                <h3 class="h2">{{ member.agent.full_name }}</h3>
+                <p class="profile__bio">{{ member.agent.bio }}</p>
+                <div class="profile__contact">
+                  <a [href]="member.phoneHref" class="btn btn--outline btn--sm">
+                    <app-icon name="phone" [size]="15" />{{ member.agent.phone }}
+                  </a>
+                  <a [href]="'mailto:' + member.agent.email" class="btn btn--ghost btn--sm">
+                    <app-icon name="mail" [size]="15" />{{ member.agent.email }}
+                  </a>
+                </div>
+
+                <div class="profile__listings">
+                  <span class="profile__listings-title">{{ member.listingsLabel }}</span>
+                  @if (member.listings.length) {
+                    <ul role="list">
+                      @for (p of member.listings; track p.id) {
+                        <li>
+                          <a [routerLink]="['/ponuka', p.slug]" class="mini">
+                            <img [src]="p.cover_image_url" alt="" width="96" height="72" loading="lazy" />
+                            <span class="mini__text">
+                              <span class="mini__title">{{ p.title }}</span>
+                              <span class="mini__meta">{{ p.city }} · <span class="num">{{ p.price | eur: p.transaction }}</span></span>
+                            </span>
+                            <app-icon name="arrow-right" [size]="16" />
+                          </a>
+                        </li>
+                      }
+                    </ul>
+                  } @else {
+                    <p class="text-muted text-small">Momentálne bez aktívnych ponúk.</p>
+                  }
+                </div>
+              </div>
+            </article>
+          }
+        </div>
+      }
+    }
+  </div>
+</section>
+
+<!-- ================================================================ OFFICE -->
+<section class="section office">
+  <div class="container office__grid">
+    <div>
+      <span class="eyebrow eyebrow--ruled">Kancelária</span>
+      <h2>Navštívte nás</h2>
+      <p class="lead">
+        Nájdete nás v historickom centre Bratislavy. Stretnutie si, prosím, vopred dohodnite telefonicky alebo e-mailom.
+      </p>
+      <a routerLink="/kontakt" class="btn btn--primary">
+        Kontaktovať kanceláriu
+        <app-icon name="arrow-right" [size]="16" class="btn__arrow" />
+      </a>
+    </div>
+
+    <div class="office__card">
+      <h3 class="h4">Otváracie hodiny</h3>
+      <dl class="hours">
+        @for (h of site.officeHours; track h.days) {
+          <div><dt>{{ h.days }}</dt><dd>{{ h.hours }}</dd></div>
+        }
+      </dl>
+    </div>
+
+    <div class="office__card">
+      <h3 class="h4">Fakturačné údaje</h3>
+      <dl class="hours">
+        <div><dt>Obchodné meno</dt><dd>{{ site.company.legalName }}</dd></div>
+        <div><dt>Sídlo</dt><dd>{{ site.address.street }}, {{ site.address.zip }} {{ site.address.city }}</dd></div>
+        <div><dt>IČO</dt><dd>{{ site.company.ico }}</dd></div>
+        <div><dt>DIČ</dt><dd>{{ site.company.dic }}</dd></div>
+        <div><dt>IČ DPH</dt><dd>{{ site.company.icDph }}</dd></div>
+      </dl>
+    </div>
+  </div>
+</section>

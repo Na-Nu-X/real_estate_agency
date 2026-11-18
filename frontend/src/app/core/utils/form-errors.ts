@@ -28,8 +28,22 @@ export function controlError(control: AbstractControl | null): string | null {
 
 export const PHONE_PATTERN = /^\+?[0-9 ()/-]{9,20}$/;
 
+/** Finds a control by name, searching nested FormGroups depth-first. */
+function findControl(group: FormGroup, name: string): AbstractControl | null {
+  const direct = group.get(name);
+  if (direct) return direct;
+  for (const child of Object.values(group.controls)) {
+    if (child instanceof FormGroup) {
+      const found = findControl(child, name);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
 /**
- * Maps a DRF 400 response onto form controls (as a `server` error).
+ * Maps a DRF 400 response onto form controls (as a `server` error), including
+ * controls inside nested groups.
  * Returns a general message for errors that could not be attached to a field.
  */
 export function applyServerErrors(form: FormGroup, error: unknown): string {
@@ -38,7 +52,7 @@ export function applyServerErrors(form: FormGroup, error: unknown): string {
       const body = error.error as ApiFieldErrors;
       const unmatched: string[] = [];
       for (const [field, messages] of Object.entries(body)) {
-        const control = form.get(field);
+        const control = findControl(form, field);
         const message = Array.isArray(messages) ? messages.join(' ') : String(messages);
         if (control) {
           control.setErrors({ server: message });

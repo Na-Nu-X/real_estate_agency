@@ -1,0 +1,296 @@
+<!-- ================================================================ HERO + WIZARD -->
+<section class="hero">
+  <div class="hero__bg" aria-hidden="true">
+    <img [src]="site.images.sell" alt="" width="1800" height="1200" />
+  </div>
+
+  <div class="hero__grid container">
+    <div class="hero__copy">
+      <span class="eyebrow eyebrow--ruled">Pre predávajúcich</span>
+      <h1>Predajte svoju nehnuteľnosť <em>s istotou</em> a za najlepšiu cenu</h1>
+      <p class="lead">
+        Vyplňte krátky formulár a do 48 hodín vám pripravíme bezplatný odhad trhovej ceny založený na reálnych
+        transakciách vo vašej lokalite.
+      </p>
+      <ul class="hero__points" role="list">
+        <li><app-icon name="check" [size]="18" />Bezplatne a nezáväzne</li>
+        <li><app-icon name="check" [size]="18" />Odhad do 48 hodín</li>
+        <li><app-icon name="check" [size]="18" />Osobná konzultácia s maklérom</li>
+      </ul>
+      <dl class="hero__metrics">
+        @for (m of site.metrics.slice(1, 3); track m.label) {
+          <div>
+            <dd class="num">{{ m.value }}</dd>
+            <dt>{{ m.label }}</dt>
+          </div>
+        }
+      </dl>
+    </div>
+
+    <div class="wizard" #wizard id="odhad">
+      @if (submitted()) {
+        <div class="success-state wizard__success" role="status">
+          <div class="success-state__icon"><app-icon name="check" [size]="28" [strokeWidth]="2" /></div>
+          <span class="eyebrow">Žiadosť odoslaná</span>
+          <h2 class="h3">Ďakujeme, ozveme sa vám do 24 hodín</h2>
+          <p>
+            Váš maklér si pripraví analýzu porovnateľných predajov v lokalite a dohodne s vami termín krátkej obhliadky.
+            Odhad dostanete najneskôr do 48 hodín.
+          </p>
+          <ol class="wizard__next" role="list">
+            <li><span>1</span>Telefonický kontakt maklérom</li>
+            <li><span>2</span>Obhliadka a analýza trhu</li>
+            <li><span>3</span>Odhad ceny a odporúčaná stratégia</li>
+          </ol>
+          <button type="button" class="link" (click)="startOver()">Odoslať ďalšiu žiadosť</button>
+        </div>
+      } @else {
+        <div class="wizard__head">
+          <h2 class="h3">Bezplatný odhad ceny</h2>
+          <ol class="stepper" role="list" aria-label="Kroky formulára">
+            @for (label of steps; track label; let i = $index) {
+              <li
+                [class.is-active]="step() === i"
+                [class.is-done]="step() > i"
+                [attr.aria-current]="step() === i ? 'step' : null"
+              >
+                <button type="button" (click)="goTo(i)" [disabled]="i >= step()">
+                  <span class="stepper__num">
+                    @if (step() > i) {
+                      <app-icon name="check" [size]="14" [strokeWidth]="2" />
+                    } @else {
+                      {{ i + 1 }}
+                    }
+                  </span>
+                  <span class="stepper__label">{{ label }}</span>
+                </button>
+              </li>
+            }
+          </ol>
+          <div class="progress" aria-hidden="true"><span [style.width.%]="((step() + 1) / 3) * 100"></span></div>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="wizard__body">
+          <!-- STEP 1 -->
+          @if (step() === 0) {
+            <fieldset formGroupName="property" class="wizard__step">
+              <legend class="visually-hidden">Typ a lokalita nehnuteľnosti</legend>
+              <div class="field">
+                <span class="field__label" id="type-label">Akú nehnuteľnosť predávate?</span>
+                <div class="type-cards" role="radiogroup" aria-labelledby="type-label">
+                  @for (t of typeCards; track t.value) {
+                    <button
+                      type="button"
+                      role="radio"
+                      class="type-card"
+                      [class.is-active]="form.controls.property.controls.property_type.value === t.value"
+                      [attr.aria-checked]="form.controls.property.controls.property_type.value === t.value"
+                      (click)="selectType(t.value)"
+                    >
+                      <app-icon [name]="t.icon" [size]="28" [strokeWidth]="1.25" />
+                      <span>{{ t.label }}</span>
+                    </button>
+                  }
+                </div>
+                @if (controlError(form.controls.property.controls.property_type); as e) {
+                  <span class="field__error">Vyberte typ nehnuteľnosti.</span>
+                }
+              </div>
+
+              <div class="field">
+                <label class="field__label" for="w-location">Lokalita</label>
+                <input
+                  id="w-location"
+                  class="control"
+                  formControlName="location"
+                  placeholder="napr. Bratislava – Ružinov, Miletičova"
+                  autocomplete="street-address"
+                />
+                @if (controlError(form.controls.property.controls.location); as e) {
+                  <span class="field__error">{{ e }}</span>
+                }
+              </div>
+            </fieldset>
+          }
+
+          <!-- STEP 2 -->
+          @if (step() === 1) {
+            <fieldset formGroupName="details" class="wizard__step">
+              <legend class="visually-hidden">Parametre nehnuteľnosti</legend>
+              <div class="field">
+                <label class="field__label" for="w-area">
+                  {{ typeLabel() === 'Pozemok' ? 'Výmera pozemku' : 'Úžitková plocha' }} (m²)
+                </label>
+                <input id="w-area" type="number" min="1" inputmode="numeric" class="control" formControlName="floor_area" placeholder="napr. 72" />
+                @if (controlError(form.controls.details.controls.floor_area); as e) {
+                  <span class="field__error">{{ e }}</span>
+                }
+              </div>
+
+              @if (needsRooms()) {
+                <div class="field">
+                  <span class="field__label" id="rooms-label">Počet izieb <span class="field__optional">(nepovinné)</span></span>
+                  <div class="room-chips" role="group" aria-labelledby="rooms-label">
+                    @for (r of roomOptions; track r.value) {
+                      <button
+                        type="button"
+                        class="chip"
+                        [attr.aria-pressed]="form.controls.details.controls.rooms.value === r.value"
+                        (click)="selectRooms(r.value)"
+                      >
+                        {{ r.label }}
+                      </button>
+                    }
+                  </div>
+                </div>
+              }
+
+              <div class="field">
+                <label class="field__label" for="w-condition">Stav nehnuteľnosti</label>
+                <select id="w-condition" class="control" formControlName="condition">
+                  <option value="" disabled>Vyberte stav</option>
+                  @for (c of conditionOptions; track c.value) {
+                    <option [value]="c.value">{{ c.label }}</option>
+                  }
+                </select>
+                @if (controlError(form.controls.details.controls.condition); as e) {
+                  <span class="field__error">{{ e }}</span>
+                }
+              </div>
+            </fieldset>
+          }
+
+          <!-- STEP 3 -->
+          @if (step() === 2) {
+            <fieldset formGroupName="contact" class="wizard__step">
+              <legend class="visually-hidden">Kontaktné údaje</legend>
+              <div class="form-grid">
+                <div class="field span-2">
+                  <label class="field__label" for="w-name">Meno a priezvisko</label>
+                  <input id="w-name" class="control" formControlName="owner_name" autocomplete="name" />
+                  @if (controlError(form.controls.contact.controls.owner_name); as e) {
+                    <span class="field__error">{{ e }}</span>
+                  }
+                </div>
+                <div class="field">
+                  <label class="field__label" for="w-phone">Telefón</label>
+                  <input id="w-phone" type="tel" class="control" formControlName="phone" autocomplete="tel" placeholder="+421 900 123 456" />
+                  @if (controlError(form.controls.contact.controls.phone); as e) {
+                    <span class="field__error">{{ e }}</span>
+                  }
+                </div>
+                <div class="field">
+                  <label class="field__label" for="w-email">E-mail</label>
+                  <input id="w-email" type="email" class="control" formControlName="email" autocomplete="email" />
+                  @if (controlError(form.controls.contact.controls.email); as e) {
+                    <span class="field__error">{{ e }}</span>
+                  }
+                </div>
+                <div class="field span-2">
+                  <label class="field__label" for="w-notes">Poznámka <span class="field__optional">(nepovinné)</span></label>
+                  <textarea id="w-notes" class="control" rows="3" formControlName="notes" placeholder="Napr. kedy vás môžeme kontaktovať, plánovaný termín predaja…"></textarea>
+                </div>
+                <label class="checkbox span-2">
+                  <input type="checkbox" formControlName="consent" />
+                  <span>
+                    Súhlasím so <a routerLink="/ochrana-osobnych-udajov" target="_blank">spracovaním osobných údajov</a>
+                    na účel vypracovania odhadu ceny.
+                  </span>
+                </label>
+                @if (controlError(form.controls.contact.controls.consent); as e) {
+                  <span class="field__error span-2">{{ e }}</span>
+                }
+              </div>
+
+              <div class="summary">
+                <span class="summary__label">Zhrnutie</span>
+                <p>
+                  {{ typeLabel() }} · {{ form.controls.property.controls.location.value }} ·
+                  {{ form.controls.details.controls.floor_area.value }} m²
+                </p>
+              </div>
+            </fieldset>
+          }
+
+          @if (formError(); as message) {
+            <div class="form-alert" role="alert">{{ message }}</div>
+          }
+
+          <div class="wizard__actions">
+            @if (step() > 0) {
+              <button type="button" class="btn btn--ghost" (click)="back()">
+                <app-icon name="arrow-left" [size]="16" />
+                Späť
+              </button>
+            } @else {
+              <span class="wizard__step-info">Krok {{ step() + 1 }} z 3</span>
+            }
+
+            @if (step() < 2) {
+              <button type="button" class="btn btn--primary" (click)="next()">
+                Pokračovať
+                <app-icon name="arrow-right" [size]="16" class="btn__arrow" />
+              </button>
+            } @else {
+              <button type="submit" class="btn btn--primary" [class.is-loading]="submitting()" [disabled]="submitting()">
+                Získať odhad zdarma
+              </button>
+            }
+          </div>
+        </form>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ PROCESS -->
+<section class="section">
+  <div class="container">
+    <header class="section-head">
+      <div class="section-head__text">
+        <span class="eyebrow eyebrow--ruled">Ako predávame</span>
+        <h2>Od prvej konzultácie po odovzdanie kľúčov</h2>
+      </div>
+    </header>
+
+    <ol class="process" role="list">
+      @for (p of process; track p.title; let i = $index) {
+        <li>
+          <span class="process__num">0{{ i + 1 }}</span>
+          <h3 class="h4">{{ p.title }}</h3>
+          <p>{{ p.text }}</p>
+        </li>
+      }
+    </ol>
+  </div>
+</section>
+
+<!-- ================================================================ TESTIMONIAL -->
+<section class="quote-band">
+  <div class="container-narrow">
+    <blockquote>„{{ site.testimonials[0].quote }}“</blockquote>
+    <p><strong>{{ site.testimonials[0].author }}</strong> · {{ site.testimonials[0].context }}</p>
+  </div>
+</section>
+
+<!-- ================================================================ FAQ -->
+<section class="section">
+  <div class="container faq">
+    <div>
+      <span class="eyebrow eyebrow--ruled">Časté otázky</span>
+      <h2>Všetko, čo potrebujete vedieť pred predajom</h2>
+      <p class="lead">Nenašli ste odpoveď? Zavolajte nám na <a class="link" [href]="phoneHref">{{ site.phone }}</a>.</p>
+    </div>
+    <div class="faq__list">
+      @for (f of faqs; track f.q; let first = $first) {
+        <details [open]="first">
+          <summary>
+            {{ f.q }}
+            <app-icon name="chevron-down" [size]="20" />
+          </summary>
+          <p>{{ f.a }}</p>
+        </details>
+      }
+    </div>
+  </div>
+</section>

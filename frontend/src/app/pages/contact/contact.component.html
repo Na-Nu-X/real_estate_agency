@@ -1,0 +1,143 @@
+<header class="page-head">
+  <div class="container">
+    <nav class="breadcrumb" aria-label="Omrvinková navigácia">
+      <a routerLink="/">Domov</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">Kontakt</span>
+    </nav>
+    <span class="eyebrow eyebrow--ruled">Kontakt</span>
+    <h1>Sme tu pre vás</h1>
+    <p class="lead">
+      Máte otázku k niektorej z našich ponúk alebo zvažujete predaj? Zavolajte, napíšte alebo nás navštívte
+      v kancelárii – odpovedáme do 24 hodín.
+    </p>
+  </div>
+</header>
+
+<section class="section contact">
+  <div class="container contact__grid">
+    <!-- ============================================================ INFO -->
+    <div class="info">
+      <a [href]="phoneHref" class="info__item">
+        <span class="info__icon"><app-icon name="phone" [size]="20" /></span>
+        <span>
+          <span class="info__label">Telefón</span>
+          <strong class="info__value">{{ site.phone }}</strong>
+        </span>
+      </a>
+      <a [href]="'mailto:' + site.email" class="info__item">
+        <span class="info__icon"><app-icon name="mail" [size]="20" /></span>
+        <span>
+          <span class="info__label">E-mail</span>
+          <strong class="info__value">{{ site.email }}</strong>
+        </span>
+      </a>
+      <a [href]="mapLink" target="_blank" rel="noopener noreferrer" class="info__item">
+        <span class="info__icon"><app-icon name="map-pin" [size]="20" /></span>
+        <span>
+          <span class="info__label">Adresa kancelárie</span>
+          <strong class="info__value">{{ site.address.street }}, {{ site.address.zip }} {{ site.address.city }}</strong>
+        </span>
+      </a>
+
+      <div class="info__block">
+        <h2 class="h4"><app-icon name="clock" [size]="18" /> Otváracie hodiny</h2>
+        <dl class="hours">
+          @for (h of site.officeHours; track h.days) {
+            <div><dt>{{ h.days }}</dt><dd>{{ h.hours }}</dd></div>
+          }
+        </dl>
+      </div>
+
+      <div class="info__block">
+        <h2 class="h4"><app-icon name="document" [size]="18" /> Fakturačné údaje</h2>
+        <dl class="hours">
+          <div><dt>Obchodné meno</dt><dd>{{ site.company.legalName }}</dd></div>
+          <div><dt>IČO</dt><dd>{{ site.company.ico }}</dd></div>
+          <div><dt>DIČ</dt><dd>{{ site.company.dic }}</dd></div>
+          <div><dt>IČ DPH</dt><dd>{{ site.company.icDph }}</dd></div>
+          <div><dt>IBAN</dt><dd>{{ site.company.iban }}</dd></div>
+        </dl>
+        <p class="info__registry">{{ site.company.registry }}</p>
+      </div>
+    </div>
+
+    <!-- ============================================================ FORM -->
+    <div class="form-card">
+      @if (sent()) {
+        <div class="success-state" role="status">
+          <div class="success-state__icon"><app-icon name="check" [size]="28" [strokeWidth]="2" /></div>
+          <h2 class="h3">Ďakujeme za správu</h2>
+          <p>Ozveme sa vám najneskôr do 24 hodín v pracovných dňoch.</p>
+          <button type="button" class="link" (click)="sent.set(false)">Napísať ďalšiu správu</button>
+        </div>
+      } @else {
+        <h2 class="h3">Napíšte nám</h2>
+        <p class="form-card__hint">Polia bez označenia sú povinné.</p>
+
+        <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="form-grid">
+          <div class="field span-2">
+            <label class="field__label" for="c-name">Meno a priezvisko</label>
+            <input id="c-name" class="control" formControlName="name" autocomplete="name" />
+            @if (controlError(form.controls.name); as e) {
+              <span class="field__error">{{ e }}</span>
+            }
+          </div>
+          <div class="field">
+            <label class="field__label" for="c-email">E-mail</label>
+            <input id="c-email" type="email" class="control" formControlName="email" autocomplete="email" />
+            @if (controlError(form.controls.email); as e) {
+              <span class="field__error">{{ e }}</span>
+            }
+          </div>
+          <div class="field">
+            <label class="field__label" for="c-phone">Telefón <span class="field__optional">(nepovinné)</span></label>
+            <input id="c-phone" type="tel" class="control" formControlName="phone" autocomplete="tel" placeholder="+421 900 123 456" />
+            @if (controlError(form.controls.phone); as e) {
+              <span class="field__error">{{ e }}</span>
+            }
+          </div>
+          <div class="field span-2">
+            <label class="field__label" for="c-subject">Predmet</label>
+            <select id="c-subject" class="control" formControlName="subject">
+              @for (s of subjects; track s) {
+                <option [value]="s">{{ s }}</option>
+              }
+            </select>
+          </div>
+          <div class="field span-2">
+            <label class="field__label" for="c-message">Správa</label>
+            <textarea id="c-message" class="control" rows="5" formControlName="message"></textarea>
+            @if (controlError(form.controls.message); as e) {
+              <span class="field__error">{{ e }}</span>
+            }
+          </div>
+          <label class="checkbox span-2">
+            <input type="checkbox" formControlName="consent" />
+            <span>
+              Súhlasím so <a routerLink="/ochrana-osobnych-udajov" target="_blank">spracovaním osobných údajov</a> na účel
+              vybavenia mojej správy.
+            </span>
+          </label>
+          @if (controlError(form.controls.consent); as e) {
+            <span class="field__error span-2">{{ e }}</span>
+          }
+
+          @if (formError(); as message) {
+            <div class="form-alert span-2" role="alert">{{ message }}</div>
+          }
+
+          <div class="span-2">
+            <button type="submit" class="btn btn--primary btn--lg" [class.is-loading]="submitting()" [disabled]="submitting()">
+              Odoslať správu
+            </button>
+          </div>
+        </form>
+      }
+    </div>
+  </div>
+</section>
+
+<section class="map" aria-label="Mapa s polohou kancelárie">
+  <iframe [src]="mapUrl" title="Mapa – poloha kancelárie" loading="lazy" referrerpolicy="no-referrer"></iframe>
+</section>
