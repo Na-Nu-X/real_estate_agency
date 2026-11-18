@@ -120,6 +120,8 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.AllowAny"],
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"]
     + (["rest_framework.renderers.BrowsableAPIRenderer"] if DEBUG else []),
+    # Serialize DecimalFields as JSON numbers for the Angular client
+    "COERCE_DECIMAL_TO_STRING": False,
     # Public lead forms: throttle anonymous POSTs to limit spam
     "DEFAULT_THROTTLE_RATES": {"leads": "20/hour"},
 }

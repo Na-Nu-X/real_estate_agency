@@ -1,0 +1,77 @@
+// ---------------------------------------------------------------------------
+// Design tokens
+// SCSS variables are compile-time; the brand colours are exposed as CSS custom
+// properties in `_base.scss` so a white-label client can be rebranded at
+// runtime (see `site.config.ts → theme`) without recompiling.
+// ---------------------------------------------------------------------------
+
+// Palette (defaults – mirrored to :root custom properties)
+$color-bg: #faf9f6;            // Warm Alabaster
+$color-surface: #ffffff;       // Crisp White
+$color-surface-alt: #f3f1ec;   // Slightly deeper alabaster for bands
+$color-border: #e5e7eb;
+$color-border-strong: #d4d6db;
+$color-text: #14171a;          // Deep Charcoal
+$color-text-muted: #525866;
+$color-text-subtle: #8a8f99;
+$color-accent: #1b4332;        // Deep Emerald
+$color-accent-hover: #132f23;
+$color-brass: #9a7b4f;         // Muted Brass
+$color-brass-light: #c9b08a;
+$color-danger: #b42318;
+$color-success: #1b4332;
+
+// Typography
+$font-serif: 'Cormorant Garamond', 'Times New Roman', Georgia, serif;
+$font-sans: 'Plus Jakarta Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
+
+// Layout
+$container-max: 1320px;
+$container-narrow: 880px;
+$gutter: 1.5rem;
+$gutter-mobile: 1rem;
+$header-height: 84px;
+$header-height-mobile: 68px;
+
+// Spacing scale (rem)
+$space: (
+  0: 0,
+  1: 0.25rem,
+  2: 0.5rem,
+  3: 0.75rem,
+  4: 1rem,
+  5: 1.5rem,
+  6: 2rem,
+  7: 3rem,
+  8: 4rem,
+  9: 6rem,
+  10: 8rem,
+);
+
+// Breakpoints (mobile-first, min-width)
+$breakpoints: (
+  sm: 576px,
+  md: 768px,
+  lg: 1024px,
+  xl: 1280px,
+);
+
+// Shape & motion – sharp architectural lines
+$radius: 2px;
+$radius-lg: 4px;
+$ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+$ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+$duration-fast: 160ms;
+$duration: 280ms;
+$duration-slow: 700ms;
+
+// Elevation
+$shadow-sm: 0 1px 2px rgba(20, 23, 26, 0.04);
+$shadow-md: 0 12px 32px -12px rgba(20, 23, 26, 0.16);
+$shadow-lg: 0 32px 64px -24px rgba(20, 23, 26, 0.28);
+
+// Z-index scale
+$z-sticky: 50;
+$z-header: 100;
+$z-drawer: 200;
+$z-modal: 300;

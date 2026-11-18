@@ -1,0 +1,522 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+// ---------------------------------------------------------------- Buttons
+.btn {
+  --btn-bg: transparent;
+  --btn-fg: var(--color-text);
+  --btn-border: transparent;
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  min-height: 3rem;
+  padding: 0.875rem 1.75rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--btn-fg);
+  background: var(--btn-bg);
+  border: 1px solid var(--btn-border);
+  border-radius: $radius;
+  transition: background-color $duration $ease, color $duration $ease,
+    border-color $duration $ease, transform $duration-fast $ease;
+
+  &:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  app-icon {
+    transition: transform $duration $ease;
+  }
+
+  &:hover:not(:disabled) app-icon.btn__arrow {
+    transform: translateX(4px);
+  }
+
+  &--primary {
+    --btn-bg: var(--color-accent);
+    --btn-fg: var(--color-accent-contrast);
+    --btn-border: var(--color-accent);
+
+    &:hover:not(:disabled) {
+      --btn-bg: var(--color-accent-hover);
+      --btn-border: var(--color-accent-hover);
+    }
+  }
+
+  &--brass {
+    --btn-bg: var(--color-brass);
+    --btn-fg: #fff;
+    --btn-border: var(--color-brass);
+
+    &:hover:not(:disabled) {
+      --btn-bg: #866a42;
+      --btn-border: #866a42;
+    }
+  }
+
+  &--outline {
+    --btn-border: var(--color-text);
+
+    &:hover:not(:disabled) {
+      --btn-bg: var(--color-text);
+      --btn-fg: var(--color-bg);
+    }
+  }
+
+  &--outline-light {
+    --btn-fg: #fff;
+    --btn-border: rgba(255, 255, 255, 0.6);
+
+    &:hover:not(:disabled) {
+      --btn-bg: #fff;
+      --btn-fg: var(--color-text);
+      --btn-border: #fff;
+    }
+  }
+
+  &--ghost {
+    padding-inline: 1rem;
+
+    &:hover:not(:disabled) {
+      --btn-bg: var(--color-surface-alt);
+    }
+  }
+
+  &--sm {
+    min-height: 2.5rem;
+    padding: 0.625rem 1.125rem;
+    font-size: 0.75rem;
+  }
+
+  &--lg {
+    min-height: 3.5rem;
+    padding: 1.125rem 2.25rem;
+  }
+
+  &--block {
+    width: 100%;
+  }
+
+  &.is-loading {
+    color: transparent;
+    pointer-events: none;
+
+    &::after {
+      content: '';
+      position: absolute;
+      width: 1.125rem;
+      height: 1.125rem;
+      border: 2px solid var(--btn-fg);
+      border-right-color: transparent;
+      border-radius: 50%;
+      animation: btn-spin 0.7s linear infinite;
+    }
+  }
+}
+
+@keyframes btn-spin {
+  to { transform: rotate(360deg); }
+}
+
+// ---------------------------------------------------------------- Forms
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+
+  &__label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  &__optional {
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--color-text-subtle);
+  }
+
+  &__error {
+    font-size: 0.8125rem;
+    color: var(--color-danger);
+    animation: fade-in $duration $ease;
+  }
+
+  &__hint {
+    font-size: 0.8125rem;
+    color: var(--color-text-subtle);
+  }
+}
+
+.control {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.9375rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: $radius;
+  transition: border-color $duration-fast $ease, box-shadow $duration-fast $ease;
+  appearance: none;
+
+  &::placeholder {
+    color: var(--color-text-subtle);
+  }
+
+  &:hover {
+    border-color: var(--color-text-subtle);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(27, 67, 50, 0.12);
+  }
+
+  &.ng-invalid.ng-touched {
+    border-color: var(--color-danger);
+  }
+}
+
+textarea.control {
+  min-height: 7.5rem;
+  resize: vertical;
+  line-height: 1.55;
+}
+
+select.control {
+  padding-right: 2.5rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%23525866' stroke-width='1.5'%3E%3Cpath d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  cursor: pointer;
+}
+
+.checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+  cursor: pointer;
+
+  input {
+    appearance: none;
+    flex: none;
+    width: 1.125rem;
+    height: 1.125rem;
+    margin-top: 0.1rem;
+    border: 1px solid var(--color-border-strong);
+    border-radius: $radius;
+    background: var(--color-surface);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: background-color $duration-fast $ease, border-color $duration-fast $ease;
+
+    &::after {
+      content: '';
+      width: 0.55rem;
+      height: 0.3rem;
+      border-left: 1.5px solid #fff;
+      border-bottom: 1.5px solid #fff;
+      transform: rotate(-45deg) translate(1px, -1px);
+      opacity: 0;
+    }
+
+    &:checked {
+      background: var(--color-accent);
+      border-color: var(--color-accent);
+
+      &::after {
+        opacity: 1;
+      }
+    }
+
+    &.ng-invalid.ng-touched {
+      border-color: var(--color-danger);
+    }
+  }
+
+  a {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+}
+
+.form-grid {
+  display: grid;
+  gap: 1.125rem;
+
+  @include up(sm) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    .span-2 {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+.form-alert {
+  padding: 0.875rem 1rem;
+  font-size: 0.875rem;
+  border-left: 2px solid var(--color-danger);
+  background: rgba(180, 35, 24, 0.06);
+  color: var(--color-danger);
+}
+
+// Segmented control / chips
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: $radius;
+  transition: all $duration-fast $ease;
+
+  &:hover {
+    color: var(--color-text);
+    border-color: var(--color-text);
+  }
+
+  &.is-active,
+  &[aria-pressed='true'] {
+    color: var(--color-accent-contrast);
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+}
+
+// ---------------------------------------------------------------- Badges
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1;
+  color: #fff;
+  background: var(--color-text);
+  border-radius: $radius;
+
+  &--exkluzivne {
+    background: var(--color-accent);
+  }
+
+  &--novinka {
+    background: var(--color-brass);
+  }
+
+  &--znizena_cena {
+    background: #fff;
+    color: var(--color-danger);
+    box-shadow: inset 0 0 0 1px rgba(180, 35, 24, 0.3);
+  }
+
+  &--rezervovane {
+    background: var(--color-text);
+  }
+
+  &--predane {
+    background: #6b7280;
+  }
+}
+
+// ---------------------------------------------------------------- Section header
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem 3rem;
+  margin-bottom: space(7);
+
+  @include up(lg) {
+    margin-bottom: space(8);
+  }
+
+  &__text {
+    max-width: 40rem;
+
+    .eyebrow {
+      margin-bottom: 1rem;
+    }
+
+    p {
+      margin: 1.25rem 0 0;
+    }
+  }
+}
+
+// ---------------------------------------------------------------- Misc
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: $radius;
+}
+
+.divider {
+  height: 1px;
+  background: var(--color-border);
+  border: 0;
+  margin: 0;
+}
+
+.skeleton {
+  @include skeleton;
+  border-radius: $radius;
+}
+
+.success-state {
+  text-align: center;
+  padding: space(6) space(4);
+  animation: fade-up $duration-slow $ease-out-expo both;
+
+  &__icon {
+    width: 4rem;
+    height: 4rem;
+    margin: 0 auto 1.5rem;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--color-accent);
+    color: #fff;
+  }
+
+  h3 {
+    margin-bottom: 0.75rem;
+  }
+
+  p {
+    color: var(--color-text-muted);
+    max-width: 28rem;
+    margin-inline: auto;
+  }
+}
+
+// ---------------------------------------------------------------- Grids
+.grid-3 {
+  display: grid;
+  gap: 2rem 1.5rem;
+
+  @include up(md) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  @include up(lg) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2.5rem 2rem;
+  }
+}
+
+.grid-4 {
+  display: grid;
+  gap: 2.5rem 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+
+  @include up(lg) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 2rem;
+  }
+}
+
+// ---------------------------------------------------------------- Skeletons
+.card-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  padding-bottom: 1.5rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+
+  &__media {
+    aspect-ratio: 4 / 3;
+    border-radius: 0;
+  }
+
+  &__line {
+    height: 1.25rem;
+    margin-inline: 1.5rem;
+
+    &--short {
+      width: 45%;
+    }
+  }
+}
+
+.agent-skeleton {
+  aspect-ratio: 4 / 5;
+}
+
+.state-message {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: var(--color-text-muted);
+  border: 1px dashed var(--color-border-strong);
+}
+
+// ---------------------------------------------------------------- Page header band
+.page-head {
+  padding-block: space(7) space(6);
+  border-bottom: 1px solid var(--color-border);
+
+  @include up(lg) {
+    padding-block: space(8) space(7);
+  }
+
+  .eyebrow {
+    margin-bottom: 1rem;
+  }
+
+  .lead {
+    max-width: 40rem;
+    margin: 1.25rem 0 0;
+  }
+}
+
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.8125rem;
+  color: var(--color-text-subtle);
+
+  a {
+    color: var(--color-text-muted);
+
+    &:hover {
+      color: var(--color-accent);
+    }
+  }
+
+  [aria-current] {
+    color: var(--color-text);
+  }
+}

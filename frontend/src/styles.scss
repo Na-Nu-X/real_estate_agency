@@ -1,0 +1,7 @@
+// Global stylesheet – design system entry point.
+// Component styles can `@use 'variables'` / `@use 'mixins'` directly thanks to
+// `stylePreprocessorOptions.includePaths` in angular.json.
+@use 'variables';
+@use 'base';
+@use 'typography';
+@use 'components';

@@ -1,0 +1,135 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+// Runtime theme tokens – override any of these to rebrand.
+:root {
+  --color-bg: #{$color-bg};
+  --color-surface: #{$color-surface};
+  --color-surface-alt: #{$color-surface-alt};
+  --color-border: #{$color-border};
+  --color-border-strong: #{$color-border-strong};
+  --color-text: #{$color-text};
+  --color-text-muted: #{$color-text-muted};
+  --color-text-subtle: #{$color-text-subtle};
+  --color-accent: #{$color-accent};
+  --color-accent-hover: #{$color-accent-hover};
+  --color-accent-contrast: #ffffff;
+  --color-brass: #{$color-brass};
+  --color-brass-light: #{$color-brass-light};
+  --color-danger: #{$color-danger};
+  --color-success: #{$color-success};
+
+  --font-serif: #{$font-serif};
+  --font-sans: #{$font-sans};
+
+  --header-h: #{$header-height-mobile};
+
+  @include up(lg) {
+    --header-h: #{$header-height};
+  }
+
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-h) + 1rem);
+
+  @include reduced-motion {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--color-bg);
+  overflow-x: hidden;
+
+  &.no-scroll {
+    overflow: hidden;
+  }
+}
+
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
+ul[role='list'],
+ol[role='list'] {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+:focus-visible {
+  @include focus-ring;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+}
+
+.container {
+  @include container;
+}
+
+.container-narrow {
+  @include container($container-narrow);
+}
+
+.section {
+  @include section-spacing;
+}
+
+.visually-hidden {
+  @include visually-hidden;
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-up {
+  animation: fade-up $duration-slow $ease-out-expo both;
+
+  @include reduced-motion {
+    animation: none;
+  }
+}
