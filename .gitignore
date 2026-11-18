@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.sqlite3
+.env
+backend/media/
+backend/staticfiles/
+
+# Node / Angular
+node_modules/
+dist/
+.angular/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
