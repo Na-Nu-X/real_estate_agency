@@ -1,0 +1,244 @@
+<!-- ================================================================ HERO -->
+<section class="hero">
+  <div class="hero__grid container">
+    <div class="hero__copy fade-up">
+      <span class="eyebrow eyebrow--ruled">Prémiové nehnuteľnosti na Slovensku</span>
+      <h1 class="display-1">Domov, ktorý <em>odráža</em> váš životný štýl</h1>
+      <p class="lead">
+        Starostlivo vybrané byty, rezidencie a vily v najžiadanejších lokalitách. S osobným prístupom, diskrétnosťou
+        a znalosťou trhu, ktorú budujeme už {{ site.metrics[0].value }} rokov.
+      </p>
+      <div class="hero__ctas">
+        <a routerLink="/ponuka" class="btn btn--primary btn--lg">
+          Prezrieť ponuku
+          <app-icon name="arrow-right" [size]="18" class="btn__arrow" />
+        </a>
+        <a routerLink="/predaj" class="link-arrow">Ocenenie zdarma</a>
+      </div>
+    </div>
+
+    <figure class="hero__media">
+      <img [src]="site.images.hero" alt="Moderná vila so záhradou a bazénom" width="1200" height="1400" fetchpriority="high" />
+      <figcaption>
+        <span class="eyebrow">Vybraná rezidencia</span>
+        <span>Bratislava – Koliba</span>
+      </figcaption>
+    </figure>
+  </div>
+
+  <!-- Quick search -->
+  <div class="container">
+    <form class="search fade-up" (submit)="search($event)" role="search" aria-label="Rýchle vyhľadávanie">
+      <div class="search__tabs" role="radiogroup" aria-label="Typ transakcie">
+        <button
+          type="button"
+          role="radio"
+          [attr.aria-checked]="qsTransaction() === 'predaj'"
+          [class.is-active]="qsTransaction() === 'predaj'"
+          (click)="qsTransaction.set('predaj')"
+        >
+          Kúpa
+        </button>
+        <button
+          type="button"
+          role="radio"
+          [attr.aria-checked]="qsTransaction() === 'prenajom'"
+          [class.is-active]="qsTransaction() === 'prenajom'"
+          (click)="qsTransaction.set('prenajom')"
+        >
+          Prenájom
+        </button>
+      </div>
+
+      <div class="search__fields">
+        <label class="search__field">
+          <span>Typ nehnuteľnosti</span>
+          <select class="search__select" [value]="qsType()" (change)="setValue(qsType, $event)">
+            <option value="">Všetky typy</option>
+            @for (o of typeOptions; track o.value) {
+              <option [value]="o.value">{{ o.label }}</option>
+            }
+          </select>
+        </label>
+        <label class="search__field">
+          <span>Lokalita</span>
+          <select class="search__select" [value]="qsCity()" (change)="setValue(qsCity, $event)">
+            <option value="">Celé Slovensko</option>
+            @for (city of site.searchLocations; track city) {
+              <option [value]="city">{{ city }}</option>
+            }
+          </select>
+        </label>
+        <label class="search__field">
+          <span>Maximálna cena</span>
+          <select class="search__select" [value]="qsMaxPrice()" (change)="setValue(qsMaxPrice, $event, true)">
+            <option value="">Bez obmedzenia</option>
+            @for (o of pricePresets; track o.value) {
+              <option [value]="o.value">{{ o.label }}</option>
+            }
+          </select>
+        </label>
+        <button type="submit" class="btn btn--primary btn--lg search__submit">
+          <app-icon name="search" [size]="18" />
+          Hľadať
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<!-- ================================================================ FEATURED -->
+<section class="section">
+  <div class="container">
+    <header class="section-head">
+      <div class="section-head__text">
+        <span class="eyebrow eyebrow--ruled">Výber kancelárie</span>
+        <h2>Exkluzívne v ponuke</h2>
+        <p class="lead">Nehnuteľnosti, ktoré zastupujeme exkluzívne. Mnohé z nich nenájdete na žiadnom inom portáli.</p>
+      </div>
+      <a routerLink="/ponuka" class="link-arrow">Celá ponuka <app-icon name="arrow-right" [size]="16" /></a>
+    </header>
+
+    @let state = featured();
+    @if (state.status === 'loading') {
+      <div class="grid-3">
+        @for (s of skeletons; track s) {
+          <div class="card-skeleton">
+            <div class="skeleton card-skeleton__media"></div>
+            <div class="skeleton card-skeleton__line"></div>
+            <div class="skeleton card-skeleton__line card-skeleton__line--short"></div>
+          </div>
+        }
+      </div>
+    } @else if (state.status === 'error') {
+      <p class="state-message">Ponuku sa momentálne nepodarilo načítať. Skúste obnoviť stránku.</p>
+    } @else if (state.status === 'success') {
+      <div class="grid-3">
+        @for (p of state.data.slice(0, 6); track p.id; let i = $index) {
+          <app-property-card [property]="p" [eager]="i < 3" />
+        }
+      </div>
+    }
+  </div>
+</section>
+
+<!-- ================================================================ WHY US -->
+<section class="why section">
+  <div class="container">
+    <div class="why__grid">
+      <div class="why__intro">
+        <span class="eyebrow eyebrow--ruled">Prečo my</span>
+        <h2>Realitná kancelária, ktorej <em>záleží</em> na detailoch</h2>
+        <p class="lead">
+          Nie sme portál s tisíckami inzerátov. Zastupujeme obmedzený počet nehnuteľností, aby sme každej z nich
+          a každému klientovi mohli venovať plnú pozornosť.
+        </p>
+        <a routerLink="/o-nas" class="link-arrow">Spoznajte náš tím</a>
+      </div>
+
+      <ol class="why__values" role="list">
+        @for (v of site.valuePropositions; track v.title; let i = $index) {
+          <li>
+            <span class="why__index">0{{ i + 1 }}</span>
+            <h3 class="h4">{{ v.title }}</h3>
+            <p>{{ v.text }}</p>
+          </li>
+        }
+      </ol>
+    </div>
+
+    <dl class="metrics">
+      @for (m of site.metrics; track m.label) {
+        <div class="metrics__item">
+          <dt>{{ m.label }}</dt>
+          <dd class="num">{{ m.value }}</dd>
+        </div>
+      }
+    </dl>
+  </div>
+</section>
+
+<!-- ================================================================ VALUATION BANNER -->
+<section class="valuation">
+  <div class="valuation__media">
+    <img [src]="site.images.valuation" alt="" loading="lazy" width="1200" height="900" />
+  </div>
+  <div class="valuation__content">
+    <span class="eyebrow">Pre predávajúcich</span>
+    <h2>Bezplatný odhad ceny vašej nehnuteľnosti</h2>
+    <p>
+      Zistite, za koľko sa vaša nehnuteľnosť reálne predá. Odhad pripravíme na základe skutočných transakcií
+      v lokalite – do 48 hodín a bez akýchkoľvek záväzkov.
+    </p>
+    <ul class="valuation__list" role="list">
+      <li><app-icon name="check" [size]="18" />Analýza porovnateľných predajov</li>
+      <li><app-icon name="check" [size]="18" />Odporúčaná stratégia predaja</li>
+      <li><app-icon name="check" [size]="18" />Osobná konzultácia s maklérom</li>
+    </ul>
+    <a routerLink="/predaj" class="btn btn--brass btn--lg">
+      Chcem odhad zdarma
+      <app-icon name="arrow-right" [size]="18" class="btn__arrow" />
+    </a>
+  </div>
+</section>
+
+<!-- ================================================================ TESTIMONIALS -->
+<section class="section testimonials">
+  <div class="container">
+    <header class="section-head">
+      <div class="section-head__text">
+        <span class="eyebrow eyebrow--ruled">Referencie</span>
+        <h2>Čo o nás hovoria klienti</h2>
+      </div>
+      <div class="testimonials__rating">
+        <div class="stars" aria-hidden="true">
+          @for (s of [1, 2, 3, 4, 5]; track s) {
+            <app-icon name="star" [size]="16" />
+          }
+        </div>
+        <span><strong>4,9 / 5</strong> z 300+ hodnotení</span>
+      </div>
+    </header>
+
+    <div class="grid-3">
+      @for (t of site.testimonials; track t.author) {
+        <figure class="quote">
+          <blockquote>{{ t.quote }}</blockquote>
+          <figcaption>
+            <strong>{{ t.author }}</strong>
+            <span>{{ t.context }}</span>
+          </figcaption>
+        </figure>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ AGENTS -->
+<section class="section team">
+  <div class="container">
+    <header class="section-head">
+      <div class="section-head__text">
+        <span class="eyebrow eyebrow--ruled">Náš tím</span>
+        <h2>Makléri, ktorí poznajú každú ulicu</h2>
+      </div>
+      <a routerLink="/o-nas" class="link-arrow">O kancelárii <app-icon name="arrow-right" [size]="16" /></a>
+    </header>
+
+    @if (agents(); as state) {
+      @if (state.status === 'success') {
+        <div class="grid-4">
+          @for (a of state.data; track a.id) {
+            <app-agent-card [agent]="a" />
+          }
+        </div>
+      } @else if (state.status === 'loading') {
+        <div class="grid-4">
+          @for (s of [1, 2, 3, 4]; track s) {
+            <div class="skeleton agent-skeleton"></div>
+          }
+        </div>
+      }
+    }
+  </div>
+</section>

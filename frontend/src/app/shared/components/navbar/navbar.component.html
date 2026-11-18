@@ -1,0 +1,69 @@
+<header class="nav" [class.is-scrolled]="scrolled() || menuOpen()">
+  <div class="nav__inner container">
+    <a routerLink="/" class="logo" [attr.aria-label]="site.name + ' – domov'">
+      <span class="logo__mark" aria-hidden="true"></span>
+      <span class="logo__text">
+        <span class="logo__name">{{ site.logoText }}</span>
+        <span class="logo__tagline">{{ site.logoTagline }}</span>
+      </span>
+    </a>
+
+    <nav class="nav__links" aria-label="Hlavná navigácia">
+      @for (link of links; track link.path) {
+        <a [routerLink]="link.path" routerLinkActive="is-active" class="nav__link">{{ link.label }}</a>
+      }
+    </nav>
+
+    <div class="nav__actions">
+      <a [href]="phoneHref(site.phone)" class="nav__phone">
+        <app-icon name="phone" [size]="16" />
+        <span>{{ site.phone }}</span>
+      </a>
+      <a routerLink="/predaj" class="btn btn--primary btn--sm nav__cta">Chcem predať</a>
+      <button
+        type="button"
+        class="nav__burger"
+        [class.is-open]="menuOpen()"
+        (click)="toggle()"
+        [attr.aria-expanded]="menuOpen()"
+        aria-controls="mobile-menu"
+        [attr.aria-label]="menuOpen() ? 'Zavrieť menu' : 'Otvoriť menu'"
+      >
+        <span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="drawer-backdrop" [class.is-open]="menuOpen()" (click)="close()" aria-hidden="true"></div>
+<aside
+  id="mobile-menu"
+  class="drawer"
+  [class.is-open]="menuOpen()"
+  [attr.aria-hidden]="!menuOpen()"
+  [attr.inert]="menuOpen() ? null : ''"
+  aria-label="Mobilné menu"
+>
+  <nav class="drawer__links">
+    <a routerLink="/" class="drawer__link" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }">
+      <span class="drawer__index">01</span> Domov
+    </a>
+    @for (link of links; track link.path; let i = $index) {
+      <a [routerLink]="link.path" routerLinkActive="is-active" class="drawer__link" [style.--i]="i + 1">
+        <span class="drawer__index">0{{ i + 2 }}</span> {{ link.label }}
+      </a>
+    }
+  </nav>
+
+  <a routerLink="/predaj" class="btn btn--primary btn--block btn--lg">
+    Chcem predať
+    <app-icon name="arrow-right" [size]="18" class="btn__arrow" />
+  </a>
+
+  <div class="drawer__contact">
+    <span class="eyebrow">Kontaktujte nás</span>
+    <a [href]="phoneHref(site.phone)">{{ site.phone }}</a>
+    <a [href]="'mailto:' + site.email">{{ site.email }}</a>
+    <p>{{ site.address.street }}, {{ site.address.zip }} {{ site.address.city }}</p>
+  </div>
+</aside>

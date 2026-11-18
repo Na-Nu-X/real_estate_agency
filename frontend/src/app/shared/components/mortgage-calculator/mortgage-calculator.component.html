@@ -1,0 +1,122 @@
+<div class="calc">
+  <div class="calc__controls">
+    <div class="calc__row">
+      <div class="calc__label">
+        <label for="mc-price">Cena nehnuteľnosti</label>
+        <div class="calc__input-wrap">
+          <input
+            id="mc-price"
+            type="number"
+            inputmode="numeric"
+            class="calc__input num"
+            [min]="limits.price.min"
+            [max]="limits.price.max"
+            [step]="limits.price.step"
+            [value]="price()"
+            (change)="update('price', $event)"
+          />
+          <span>€</span>
+        </div>
+      </div>
+      <input
+        type="range"
+        aria-label="Cena nehnuteľnosti"
+        [min]="limits.price.min"
+        [max]="limits.price.max"
+        [step]="limits.price.step"
+        [value]="price()"
+        [style.--fill]="fill(price(), limits.price.min, limits.price.max)"
+        (input)="update('price', $event)"
+      />
+    </div>
+
+    <div class="calc__row">
+      <div class="calc__label">
+        <label for="mc-down">Vlastné zdroje</label>
+        <output class="num">{{ downPaymentPct() }} % · {{ downPayment() | eur }}</output>
+      </div>
+      <input
+        id="mc-down"
+        type="range"
+        [min]="limits.down.min"
+        [max]="limits.down.max"
+        [step]="limits.down.step"
+        [value]="downPaymentPct()"
+        [style.--fill]="fill(downPaymentPct(), limits.down.min, limits.down.max)"
+        (input)="update('down', $event)"
+      />
+    </div>
+
+    <div class="calc__row">
+      <div class="calc__label">
+        <label for="mc-years">Doba splácania</label>
+        <output class="num">{{ years() }} rokov</output>
+      </div>
+      <input
+        id="mc-years"
+        type="range"
+        [min]="limits.years.min"
+        [max]="limits.years.max"
+        [step]="limits.years.step"
+        [value]="years()"
+        [style.--fill]="fill(years(), limits.years.min, limits.years.max)"
+        (input)="update('years', $event)"
+      />
+      <div class="calc__scale"><span>5 rokov</span><span>30 rokov</span></div>
+    </div>
+
+    <div class="calc__row">
+      <div class="calc__label">
+        <label for="mc-rate">Úroková sadzba (p. a.)</label>
+        <div class="calc__input-wrap calc__input-wrap--sm">
+          <input
+            id="mc-rate"
+            type="number"
+            inputmode="decimal"
+            class="calc__input num"
+            [min]="limits.rate.min"
+            [max]="limits.rate.max"
+            [step]="limits.rate.step"
+            [value]="ratePct()"
+            (change)="update('rate', $event)"
+          />
+          <span>%</span>
+        </div>
+      </div>
+      <input
+        type="range"
+        aria-label="Úroková sadzba"
+        [min]="limits.rate.min"
+        [max]="limits.rate.max"
+        [step]="limits.rate.step"
+        [value]="ratePct()"
+        [style.--fill]="fill(ratePct(), limits.rate.min, limits.rate.max)"
+        (input)="update('rate', $event)"
+      />
+    </div>
+  </div>
+
+  <div class="calc__result" aria-live="polite">
+    <span class="calc__result-label">Odhadovaná mesačná splátka</span>
+    <strong class="calc__monthly num">{{ monthly() | eur }}</strong>
+
+    <div class="calc__bar" role="img" [attr.aria-label]="'Istina tvorí ' + principalShare().toFixed(0) + ' % z celkovej sumy'">
+      <span [style.width.%]="principalShare()"></span>
+    </div>
+    <div class="calc__legend">
+      <span><i class="dot dot--principal"></i>Istina</span>
+      <span><i class="dot dot--interest"></i>Úroky</span>
+    </div>
+
+    <dl class="calc__summary">
+      <div><dt>Výška úveru</dt><dd class="num">{{ loanAmount() | eur }}</dd></div>
+      <div><dt>Zaplatené úroky</dt><dd class="num">{{ totalInterest() | eur }}</dd></div>
+      <div><dt>Celkom zaplatíte</dt><dd class="num">{{ totalPaid() | eur }}</dd></div>
+    </dl>
+
+    <p class="calc__note">
+      Výpočet je orientačný. Banky na Slovensku financujú spravidla do 80 % hodnoty nehnuteľnosti. Presnú ponuku vám
+      pripraví náš hypotekárny partner.
+    </p>
+  </div>
+</div>

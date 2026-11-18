@@ -1,0 +1,46 @@
+@let p = property();
+<a class="card" [routerLink]="['/ponuka', p.slug]" [attr.aria-label]="p.title + ', ' + location()">
+  <div class="card__media">
+    <img
+      [src]="p.cover_image_url"
+      [alt]="p.title"
+      width="800"
+      height="600"
+      [attr.loading]="eager() ? 'eager' : 'lazy'"
+      decoding="async"
+    />
+    <div class="card__tags">
+      @if (p.badge !== 'none') {
+        <span class="badge badge--{{ p.badge }}">{{ p.badge_display }}</span>
+      }
+    </div>
+    <span class="card__transaction">{{ p.transaction === 'predaj' ? 'Na predaj' : 'Na prenájom' }}</span>
+  </div>
+
+  <div class="card__body">
+    <p class="card__location">
+      <app-icon name="map-pin" [size]="14" />
+      <span>{{ location() }}</span>
+    </p>
+    <h3 class="card__title">{{ p.title }}</h3>
+
+    <ul class="card__specs" role="list">
+      @if (p.floor_area > 0) {
+        <li title="Úžitková plocha"><app-icon name="area" [size]="16" />{{ p.floor_area | area }}</li>
+      }
+      @if (p.rooms > 0) {
+        <li title="Počet izieb"><app-icon name="rooms" [size]="16" />{{ p.rooms | rooms }}</li>
+      }
+      @if (showLand()) {
+        <li title="Pozemok"><app-icon name="land" [size]="16" />{{ p.land_area | area }}</li>
+      } @else if (p.floor !== null) {
+        <li title="Podlažie"><app-icon name="floor" [size]="16" />{{ p.floor | floor }}</li>
+      }
+    </ul>
+
+    <div class="card__footer">
+      <span class="card__price num">{{ p.price | eur: p.transaction }}</span>
+      <span class="card__arrow" aria-hidden="true"><app-icon name="arrow-right" [size]="18" /></span>
+    </div>
+  </div>
+</a>

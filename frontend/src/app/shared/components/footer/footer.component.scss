@@ -1,0 +1,154 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+.footer {
+  background: var(--color-text);
+  color: rgba(255, 255, 255, 0.72);
+  padding-top: space(8);
+  font-size: 0.9375rem;
+
+  a {
+    transition: color $duration $ease;
+
+    &:hover {
+      color: #fff;
+    }
+  }
+
+  &__top {
+    display: grid;
+    gap: 2.5rem;
+    padding-bottom: space(7);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+
+    @include up(md) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    @include up(lg) {
+      grid-template-columns: 1.6fr 1fr 1fr 1.1fr;
+      gap: 3rem;
+    }
+  }
+
+  &__brand {
+    @include up(md) {
+      grid-column: 1 / -1;
+    }
+    @include up(lg) {
+      grid-column: auto;
+    }
+  }
+
+  &__logo {
+    font-family: var(--font-serif);
+    font-size: 2.25rem;
+    font-weight: 500;
+    color: #fff;
+  }
+
+  &__claim {
+    max-width: 22rem;
+    margin: 1rem 0 1.5rem;
+    line-height: 1.6;
+  }
+
+  &__social {
+    display: flex;
+    gap: 0.5rem;
+
+    a {
+      width: 2.5rem;
+      height: 2.5rem;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: $radius;
+      transition: all $duration $ease;
+
+      &:hover {
+        border-color: var(--color-brass-light);
+        color: var(--color-brass-light);
+      }
+    }
+  }
+
+  &__heading {
+    @include eyebrow;
+    color: var(--color-brass-light);
+    margin-bottom: 1.25rem;
+  }
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  address {
+    font-style: normal;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  &__strong {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    color: #fff;
+  }
+
+  &__legal {
+    padding-block: space(6);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    font-size: 0.8125rem;
+    display: grid;
+    gap: 1rem;
+  }
+
+  &__company {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+
+    strong {
+      color: #fff;
+      font-weight: 600;
+    }
+  }
+
+  &__registry {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  &__gdpr {
+    display: flex;
+    gap: 0.75rem;
+    margin: 0;
+    max-width: 52rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.6);
+
+    app-icon {
+      margin-top: 0.15rem;
+      color: var(--color-brass-light);
+    }
+
+    a {
+      color: #fff;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+  }
+
+  &__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
+    padding-block: 1.5rem;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.45);
+  }
+}
